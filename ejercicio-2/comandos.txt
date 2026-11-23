@@ -1,0 +1,15 @@
+mkdir -p bin
+javac -encoding UTF-8 -d bin src/*.java
+java -cp bin Main data/input.png data/grises.png grises
+java -cp bin Main data/input.png data/negativo.png negativo
+java -cp bin Main data/input.png data/rojo.png rojo
+java -cp bin Main data/input.png data/verde.png verde
+java -cp bin Main data/input.png data/azul.png azul
+java -cp bin Main data/input.png data/brillo.png brillo
+java -cp bin Main data/input.png data/umbral.png umbral
+java -cp bin Main data/input.png data/espejo.png espejo
+java -cp bin Main data/input.png data/rotar.png rotar
+java -cp bin Main data/input.png data/brillo_60.png brillo 60
+java -cp bin Main data/input.png data/brillo_menos_60.png brillo -60
+java -cp bin Main data/input.png data/umbral_60.png umbral 60
+java -cp bin Main data/input.png data/umbral_200.png umbral 200

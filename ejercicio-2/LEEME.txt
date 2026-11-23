@@ -1,0 +1,17 @@
+Editor de imagenes - arreglos de objetos
+
+Base del curso: https://github.com/sebdeveloper6952/cc2008-exercise-2
+Se completaron las clases proporcionadas y se conservaron sus nombres.
+El documento recibido se titula Ejercicio 3; esta carpeta conserva el numero 2
+con el que aparece la actividad en Canvas.
+
+Desde esta carpeta, con Java 17 o posterior:
+mkdir -p bin
+javac -encoding UTF-8 -d bin src/*.java
+java -cp bin Main data/input.png data/grises.png grises
+
+Tambien se admite el nombre EditorImagenes en lugar de Main.
+Todos los comandos de ejemplo estan en comandos.txt.
+La carpeta data contiene la imagen original del repositorio base y los resultados.
+Las coordenadas que se muestran en consola comienzan en cero.
+No se desarrollo blur porque es un reto opcional, no un filtro exigido por la guia.
