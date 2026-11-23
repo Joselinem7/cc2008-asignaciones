@@ -1,0 +1,8 @@
+Compilar y ejecutar con Java 17 o posterior.
+Abrir la terminal en esta carpeta y ejecutar:
+
+mkdir -p bin
+javac -encoding UTF-8 -d bin src/*.java
+java -cp bin Main
+
+Los archivos .java estan en src. El PDF contiene el analisis y el diagrama UML.
