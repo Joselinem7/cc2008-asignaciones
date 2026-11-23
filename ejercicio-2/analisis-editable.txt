@@ -1,0 +1,128 @@
+Ejercicio 2. Arreglos básicos
+Editor de filtros de imágenes
+Joseline Mishel Mazariegos Lacán
+
+El programa abre una imagen desde la línea de comandos, representa cada píxel con un objeto y genera un archivo nuevo con el filtro elegido. Se conservan los nombres de las clases del repositorio base. La guía recibida tiene como encabezado “Ejercicio 3 - Arreglos de objetos”; aquí se conserva el número de la actividad de Canvas.
+
+REQUISITOS
+1. Recibir la ruta de entrada, ruta de salida y filtro, sin pedir datos durante la ejecución.
+2. Validar la cantidad de argumentos y el nombre del filtro antes de abrir la imagen.
+3. Verificar que la entrada exista y pueda abrirse, y que la salida no sea el mismo archivo, incluso mediante enlaces o rutas equivalentes.
+4. Explicar el error y mostrar la forma de uso, sin crear una salida cuando la validación falla.
+5. Modelar cada píxel mediante sus tres canales enteros RGB, limitados entre 0 y 255.
+6. Guardar los píxeles en Pixel[][] con dimensiones calculadas a partir de la imagen.
+7. Informar ancho, alto y cantidad total de píxeles de entrada.
+8. Aplicar grises, negativo y conservación de los canales rojo, verde o azul.
+9. Aplicar brillo con un entero opcional de valor 30 por defecto; limitar los resultados al intervalo RGB.
+10. Aplicar umbral con un entero opcional de valor 128 por defecto, validado entre 0 y 255.
+11. Reflejar horizontalmente y rotar 90 grados a la derecha, intercambiando las dimensiones al rotar.
+12. Conservar una copia independiente para comparar el brillo promedio original y final.
+13. Localizar el píxel más claro y el más oscuro por promedio RGB, informando fila y columna.
+14. Guardar la salida e informar su ruta y dimensiones finales.
+15. Incluir la imagen original, ejemplos de todos los filtros y los comandos que los generaron.
+
+DECISIONES
+La primera dimensión de Pixel[][] corresponde a filas (alto) y la segunda a columnas (ancho). Las coordenadas de consola comienzan en cero. Ante empates de brillo se elige el primer píxel encontrado al recorrer por filas.
+Los filtros devuelven una Image nueva. La copia inicial y setPixel crean píxeles nuevos, por lo que la imagen original y el resultado no comparten sus objetos Pixel.
+El umbral utiliza promedio > límite para blanco; el resto queda negro, siguiendo el comentario del repositorio. Los grises usan división entera. El brillo promedio de la imagen conserva decimales.
+No se implementa blur porque figura como reto opcional en el repositorio y no está en la tabla obligatoria. El archivo debe tener una extensión compatible con ImageIO y la carpeta de salida debe existir.
+Sin limitar un canal, sumar 60 a 230 da 290, que no pertenece a RGB. Si se empaqueta usando & 255, 290 pasa a 34 y se oscurece. Con saturación queda 255. Este ejemplo explica el problema; no se incluye una versión que guarde colores inválidos.
+Intercambiar columnas dentro del arreglo original recorriendo todo el ancho deshace los cambios al llegar al otro extremo. Es más sencillo escribir cada píxel en su posición reflejada dentro de una imagen nueva.
+
+ANALISIS
+1 y 2. Clases, propiedades, métodos y tipos
+Pixel almacena int red, green y blue. Image contiene Pixel[][] pixels. ImageEditor conserva una Image original y devuelve imágenes transformadas. ImageUtils lee y escribe archivos. Main valida argumentos y coordina; EditorImagenes permite el nombre alternativo de ejecución de la guía. El inventario y UML indican cada firma.
+
+3. Arreglo identificado
+Image.pixels es un arreglo bidimensional de referencias Pixel. pixels[fila][columna] representa un punto de la imagen. No hay dimensiones fijas.
+
+4. Visibilidad
+Los atributos son private. Los métodos utilizados por otras clases son public. limitar y validarPosicion son private porque solo ayudan al funcionamiento interno.
+
+5. Parámetros
+Los constructores reciben canales, una matriz o dimensiones; getPixel y setPixel reciben fila y columna. Los filtros parametrizados reciben un canal, una cantidad o un límite. load y save reciben rutas. Los métodos de estadísticas trabajan con la matriz existente.
+
+6. Valores iniciales
+El constructor por dimensiones crea un píxel negro nuevo en cada celda. Al leer una imagen se reemplazan esos valores por los canales del archivo. Pixel limita cada canal mediante sus setters. ImageEditor conserva una copia de la imagen que recibe.
+
+7. Argumentos de main
+Java entrega String[] args. Las rutas y el nombre del filtro siguen siendo String. La cantidad de brillo y el límite se convierten con Integer.parseInt; si el texto no es un entero válido se informa el error.
+
+8. Validaciones previas
+Se revisan tres argumentos obligatorios, extras permitidos según el filtro, filtro conocido, entero opcional, rango del umbral, acceso a la entrada, salida diferente y extensión de salida compatible. Si algo falla, se muestra el uso y no se procesa ni se guarda el resultado.
+
+9. Dimensiones dinámicas
+ImageIO.read devuelve una BufferedImage. Sus métodos getHeight y getWidth indican las dimensiones para crear Pixel[alto][ancho].
+
+10. Creación de los objetos
+Justo después de new Pixel[alto][ancho], cada posición contiene null. Los ciclos crean un new Pixel antes de utilizarlo. Una copia también construye un objeto nuevo por posición.
+
+11. Recorrido
+Un for externo recorre row desde cero hasta alto - 1. Un for interno recorre col desde cero hasta ancho - 1. Se consulta o modifica el objeto de esa posición.
+
+12. Referencias y copias
+Asignar la misma referencia hace que dos posiciones apunten al mismo objeto. new Pixel(otro) copia los valores en un objeto independiente. La independencia es necesaria al conservar el original y generar filtros y transformaciones sin alterar sus píxeles.
+
+13. Cambio de tamaño
+La rotación crea Image(anchoOriginal, altoOriginal). No se guardan atributos de ancho y alto separados: getWidth y getHeight los calculan desde pixels, así que siempre coinciden con la matriz resultante.
+
+14. Rango de canales
+limitar usa Math.max(0, Math.min(255, valor)). En brillo, la suma se realiza como long antes de saturarla para evitar desbordamientos de int con cantidades extremas.
+
+Main
+Valida los argumentos y coordina lectura, filtro, estadísticas y guardado.
++ main(args: String[]): void
+ImageEditor
+Aplica los filtros sobre una copia sin modificar la entrada.
+- og: Image - Copia independiente de la imagen que se quiere transformar.
++ ImageEditor(og: Image)
++ negative(): Image
++ grayscale(): Image
++ keepOnlyChannel(channel: int): Image
++ brightness(amount: int): Image
++ blackAndWhite(limit: int): Image
++ mirrorHorizontal(): Image
++ rotate90(): Image
+ImageUtils
+Convierte entre archivos de imagen y objetos Image; completa la utilidad del repositorio.
++ load(filename: String): Image
++ save(image: Image, filename: String): void
++ formato(filename: String): String
+Image
+Administra la matriz de píxeles, sus dimensiones, copias y estadísticas.
+- pixels: Pixel[][] - Matriz de objetos Pixel: [fila][columna].
++ Image(height: int, width: int)
++ Image(pixels: Pixel[][])
++ getHeight(): int
++ getWidth(): int
+- validarPosicion(row: int, col: int): void
++ getPixel(row: int, col: int): Pixel
++ setPixel(row: int, col: int, pixel: Pixel): void
++ copia(): Image
++ promedioBrillo(): double
++ buscarExtremo(masClaro: boolean): int[]
+Pixel
+Representa un punto RGB y controla el rango de sus canales.
+- red: int - Canal rojo entero, de 0 a 255.
+- green: int - Canal verde entero, de 0 a 255.
+- blue: int - Canal azul entero, de 0 a 255.
++ Pixel(red: int, green: int, blue: int)
++ Pixel(otro: Pixel)
++ getRed(): int
++ getGreen(): int
++ getBlue(): int
++ setRed(red: int): void
++ setGreen(green: int): void
++ setBlue(blue: int): void
+- limitar(valor: int): int
++ promedio(): double
+EditorImagenes
+Permite ejecutar el mismo programa con el nombre alternativo de la guía.
++ main(args: String[]): void
+
+PRUEBAS
+Se ejecutaron los nueve filtros requeridos y cuatro variantes adicionales de brillo y umbral.
+Las trece imágenes generadas se compararon píxel por píxel contra cálculos independientes.
+Una imagen rectangular de 2 x 3 confirmó la rotación, el espejo y las dimensiones.
+Se verificaron copia independiente, saturación y posiciones inválidas.
+Se probaron argumentos faltantes, filtro desconocido, parámetro no numérico, umbral fuera de rango, extras, archivo inexistente y salida igual a la entrada.

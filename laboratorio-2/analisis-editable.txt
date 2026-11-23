@@ -1,0 +1,124 @@
+Laboratorio 2. Arreglos y excepciones
+Misión de exploración espacial
+Joseline Mishel Mazariegos Lacán
+
+El sistema administra una nave con cinco espacios para módulos y una colección de planetas descubiertos. Se utiliza un arreglo fijo para los módulos y ArrayList directamente para los planetas. Las validaciones evitan cambios incompletos y permiten continuar después de errores de entrada.
+
+REQUISITOS
+1. Solicitar nombre, código y comandante de la nave al iniciar.
+2. Permitir crear una nueva nave y reemplazar la actual, sin conservar sus módulos ni planetas.
+3. Mantener un arreglo Modulo[5] cuyas posiciones disponibles contengan null.
+4. Registrar código, nombre, tipo, consumo y estado de cada módulo.
+5. Exigir consumo de energía finito y mayor que cero; generar IllegalArgumentException cuando no se cumpla.
+6. Instalar módulos únicamente en posiciones de 0 a 4 que estén disponibles.
+7. Consultar los módulos instalados, mostrando sus posiciones sin tratar null como un módulo.
+8. Consultar un módulo por posición e informar índices inválidos o espacios vacíos.
+9. Modificar el consumo y estado de un módulo existente con las mismas validaciones iniciales.
+10. Retirar un módulo existente y devolver null a su posición.
+11. Guardar los planetas directamente en ArrayList<Planeta>, sin usar List.
+12. Registrar código, nombre, distancia desde la nave, temperatura y habitabilidad de cada planeta.
+13. Exigir distancia positiva y habitabilidad entre 0 y 100, con IllegalArgumentException ante valores inválidos.
+14. Rechazar códigos de planeta repetidos, sin distinguir mayúsculas y minúsculas.
+15. Consultar todos los planetas y manejar la colección vacía.
+16. Buscar un planeta por código mediante recorrido del ArrayList.
+17. Modificar un planeta existente sin aceptar valores inválidos.
+18. Eliminar un planeta existente de la colección.
+19. Reportar módulos instalados, espacios libres y módulo de mayor consumo.
+20. Reportar cantidad de planetas, mayor y menor habitabilidad y su promedio; evitar cálculos sobre una colección vacía.
+21. Capturar InputMismatchException en entradas numéricas, limpiar la línea incorrecta y volver a pedir el dato.
+22. Usar try-catch para validaciones y finally para cerrar el Scanner al terminar.
+23. Ofrecer las trece opciones de la guía y continuar funcionando después de errores manejados.
+
+DECISIONES
+Las posiciones de módulos se muestran de 0 a 4 para que coincidan con los índices del arreglo. Los estados y tipos de módulo son texto libre, pero no pueden estar vacíos.
+El código de un planeta se conserva durante su modificación porque es su identificador. Se pueden cambiar nombre, distancia, temperatura y habitabilidad. Para cambiar de identificador se elimina y se registra de nuevo.
+Los datos numéricos se leen con Scanner.nextInt y nextDouble para manejar InputMismatchException de forma explícita. Se utiliza punto decimal. NaN e infinito también se rechazan en los atributos decimales.
+Antes de asignar datos modificados se valida el conjunto completo. Por eso una edición inválida no deja un nombre o un consumo cambiado a medias. En empates del reporte se conserva el primer objeto encontrado.
+La guía no define unidades: la distancia, temperatura y consumo se muestran con el valor ingresado y deben capturarse usando una misma unidad durante la misión. No hay persistencia después de cerrar el programa.
+
+ANALISIS
+1 y 2. Clases y tipos
+Main atiende el menú y las lecturas. Nave almacena sus datos String, Modulo[] y ArrayList<Planeta>. Modulo guarda identidad y estado String, y consumo double. Planeta guarda código y nombre String, y distancia, temperatura y habitabilidad double. El inventario describe todos los miembros.
+
+3. Arreglo básico
+Nave.modulos es Modulo[] de tamaño 5. Cada índice identifica un espacio físico y su valor puede ser una referencia a Modulo o null.
+
+4. Colección dinámica
+Nave.planetas es ArrayList<Planeta>. Permite aumentar o reducir la cantidad de planetas sin fijar un límite desde el inicio.
+
+5. Visibilidad
+Los atributos son private y las operaciones que necesita otra clase son public. Las lecturas auxiliares de Main y validarPosicion de Nave son private.
+
+6. Parámetros
+Las operaciones del arreglo reciben un índice; instalar recibe también un Modulo y modificar recibe consumo y estado. Las operaciones de planetas usan su código o un objeto Planeta. Los constructores reciben los datos iniciales de cada objeto.
+
+7. Inicialización y validación
+La nave crea cinco posiciones null y un ArrayList vacío. Los constructores validan texto obligatorio, consumo > 0, distancia > 0 y habitabilidad de 0 a 100. actualizar valida los datos completos antes de asignarlos.
+
+8. Posiciones vacías
+Primero se comprueba que el índice esté entre cero y modulos.length - 1. Después se evalúa modulos[posicion] != null antes de llamar a sus métodos.
+
+9. Búsqueda, modificación y eliminación
+buscarPlaneta recorre el ArrayList comparando códigos con equalsIgnoreCase. Devuelve el objeto o null. modificarPlaneta busca y llama actualizar. eliminarPlaneta busca y llama remove fuera del recorrido, evitando modificar la colección durante el for.
+
+10. Excepciones y finally
+Las lecturas numéricas capturan InputMismatchException, descartan la línea incorrecta y vuelven a pedir el valor. Las validaciones de objetos y de índices lanzan IllegalArgumentException, que el menú captura para mostrar un mensaje. El bloque finally de la interacción cierra el Scanner al salir normalmente o ante un error inesperado; no se cierra después de cada opción porque eso impediría seguir leyendo.
+
+Main
+Lee los datos, presenta las trece opciones y maneja los errores de interacción.
+- entrada: Scanner - Scanner compartido por las lecturas del menú.
+- texto(mensaje: String): String
+- entero(mensaje: String): int
+- decimal(mensaje: String): double
+- nuevaNave(): Nave
++ main(args: String[]): void
+Nave
+Conserva los módulos y planetas de la misión y realiza búsquedas, cambios y reportes.
+- nombre: String - Nombre de la nave, módulo o planeta, según la clase.
+- codigo: String - Identificador del objeto; el de Planeta se utiliza para buscar y evitar duplicados.
+- comandante: String - Nombre de quien dirige la nave.
+- modulos: Modulo[] - Arreglo básico de cinco referencias Modulo; null indica disponibilidad.
+- planetas: ArrayList<Planeta> - ArrayList<Planeta> con los descubrimientos actuales.
++ Nave(nombre: String, codigo: String, comandante: String)
+- validarPosicion(posicion: int): void
++ instalarModulo(posicion: int, modulo: Modulo): void
++ consultarModulo(posicion: int): Modulo
++ consultarModulos(): String
++ modificarModulo(posicion: int, consumo: double, estado: String): void
++ retirarModulo(posicion: int): void
++ buscarPlaneta(codigo: String): Planeta
++ registrarPlaneta(planeta: Planeta): void
++ consultarPlanetas(): String
++ modificarPlaneta(codigo: String, nombre: String, distancia: double, temperatura: double, habitabilidad: double): void
++ eliminarPlaneta(codigo: String): void
++ reporte(): String
+Modulo
+Representa un equipo instalado en uno de los cinco espacios.
+- codigo: String - Identificador del objeto; el de Planeta se utiliza para buscar y evitar duplicados.
+- nombre: String - Nombre de la nave, módulo o planeta, según la clase.
+- tipo: String - Función o categoría del módulo.
+- consumo: double - Energía del módulo; debe ser positiva y finita.
+- estado: String - Situación actual del módulo, como activo o apagado.
++ Modulo(codigo: String, nombre: String, tipo: String, consumo: double, estado: String)
++ actualizar(consumo: double, estado: String): void
++ getConsumo(): double
++ toString(): String
+Planeta
+Representa un descubrimiento y valida sus características.
+- codigo: String - Identificador del objeto; el de Planeta se utiliza para buscar y evitar duplicados.
+- nombre: String - Nombre de la nave, módulo o planeta, según la clase.
+- distancia: double - Distancia positiva y finita desde la nave.
+- temperatura: double - Temperatura finita registrada para el planeta.
+- habitabilidad: double - Nivel de habitabilidad entre 0 y 100.
++ Planeta(codigo: String, nombre: String, distancia: double, temperatura: double, habitabilidad: double)
++ actualizar(nombre: String, distancia: double, temperatura: double, habitabilidad: double): void
++ getCodigo(): String
++ getHabitabilidad(): double
++ toString(): String
+
+PRUEBAS
+Se llenaron los cinco espacios y se rechazaron posición ocupada, índice fuera de rango y consulta de posición vacía.
+Se comprobó que un consumo inválido no cambie el módulo y que retirarlo libere el espacio.
+Se registraron habitabilidades 0 y 100; el promedio fue 50. Se rechazaron códigos duplicados y valores fuera de rango.
+Se probaron búsqueda, modificación y eliminación, incluso hasta dejar la colección vacía.
+En consola se ingresaron letras donde se pedían números y luego se continuó; también se creó una nave nueva y se verificó el reinicio de sus datos.

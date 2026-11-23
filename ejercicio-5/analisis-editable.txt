@@ -1,0 +1,153 @@
+Ejercicio 5. Polimorfismo vía herencia
+UVG Card Battle
+Joseline Mishel Mazariegos Lacán
+
+El prototipo permite a dos personas jugar una partida de cartas por consola. Las cartas comparten una clase abstracta, pero sus efectos cambian según la subclase. Un solo ArrayList<Carta> mantiene el catálogo y la ubicación de cada carta. El programa separa modelo, vista y controlador.
+
+REQUISITOS
+1. Modelar una carta con ID, nombre, costo de energía y descripción.
+2. Crear cartas Catedratico con departamento, llamadas de atención y tiempo de atención.
+3. Crear cartas Curso con créditos y dificultad, y EventoCampus con un efecto sobre el tablero.
+4. Definir jugarCarta en Carta y sobrescribir su comportamiento en cada subtipo.
+5. Cargar al inicio al menos diez cartas aleatorias; el prototipo crea 18 e incluye los tres tipos.
+6. Mantener una única lista polimórfica de cartas de distintos tipos.
+7. Listar las cartas con todas sus características y su ubicación.
+8. Buscar una carta por ID o nombre y mostrar su información completa.
+9. Ordenar el catálogo de menor a mayor costo de energía.
+10. Permitir turnos donde se puede jugar una carta de la mano, tomar una del mazo o pasar.
+11. Descontar la energía de la carta y ejecutar su efecto; rechazar cartas ajenas o sin energía suficiente.
+12. Separar modelo, vista y controlador, utilizar sobrecarga y encapsular los atributos.
+13. Sobrescribir toString; comparar cartas por ID usando equals y hashCode.
+14. Documentar reglas elegidas, diseño y programa, y mantener cambios con Git y ramas.
+
+DECISIONES
+Se juega con dos personas, tres cartas iniciales para cada una y diez turnos por jugador. Cada jugador empieza con 10 de energía; quien entra al siguiente turno recibe 2, excepto en el primer turno global. La energía nunca baja de cero ni supera 20.
+Jugar, tomar o pasar consume el turno. Listar, buscar y ordenar son consultas y no lo consumen. Una acción inválida tampoco cambia de jugador. Al llegar a veinte turnos gana quien tenga más puntos; se permite empate.
+Catedratico resta al rival sus llamadas de atención y suma al jugador su tiempo de atención como puntos. Curso suma créditos por dificultad. EventoCampus cambia la energía de ambos: Feria de Clubes suma 4 y Semana de Parciales resta 3. Se paga el costo antes del efecto.
+La única colección polimórfica es Juego.cartas. Carta.ubicacion vale -1 en el mazo, 0 o 1 en la mano de cada jugador y 2 después de jugarla. No se crean listas separadas de manos ni de descartes.
+La carga crea 18 IDs únicos y valores aleatorios. Las tres primeras cartas aseguran una de cada tipo; las demás sortean el tipo. Los nombres llevan el ID para poder buscar sin ambigüedad.
+Ordenar reorganiza la misma colección, pero conserva ID y ubicación. También cambia el orden de las cartas disponibles que se tomarán después. Se usa ordenamiento de burbuja para mantener una implementación introductoria.
+
+ANALISIS
+Herencia y polimorfismo
+Carta es abstracta y declara jugarCarta(Jugador actual, Jugador rival). Catedratico, Curso y EventoCampus la extienden y usan @Override. Juego guarda referencias Carta y llama carta.jugarCarta(actual, rival); Java selecciona el comportamiento sin condicionales de tipo dentro de la acción de jugar.
+
+Sobrecarga
+Juego.buscar(int id) y Juego.buscar(String nombre) comparten nombre y cambian el tipo del parámetro. La vista solicita el tipo de búsqueda y el controlador llama a la versión correspondiente. No se confunde esta sobrecarga con sobrescribir jugarCarta.
+
+Modelo
+Carta, sus tres subclases, Jugador y Juego representan datos y reglas. No leen Scanner ni imprimen mensajes. Juego valida pertenencia, energía y turno antes de cambiar el estado.
+
+Vista
+Vista es la única clase que usa Scanner o System.out. Lee texto y enteros, muestra cartas y dibuja el catálogo en consola. No aplica los efectos de las cartas ni cambia el turno.
+
+Controlador
+Controlador recibe las opciones, pide los datos a Vista, llama las operaciones de Juego y devuelve los resultados a Vista. Main crea los componentes y conecta el controlador.
+
+Encapsulación e identidad
+Todos los atributos son private. Los getters permiten consultar lo necesario. setUbicacion y los métodos de Jugador controlan cambios. equals considera que dos cartas tienen la misma identidad cuando sus IDs coinciden; hashCode usa ese mismo ID.
+
+Inicialización y referencias
+Juego crea un ArrayList vacío, dos jugadores con energía 10 y puntos 0, y el catálogo aleatorio. Los primeros seis objetos reciben ubicaciones alternadas para repartir tres cartas a cada persona. El resto queda en el mazo.
+
+Responsabilidades y cambios
+Las decisiones de turno y puntuación se concentran en Juego y las subclases. Los comentarios del código aclaran el despacho polimórfico, el ordenamiento y las ubicaciones. El inventario y los diagramas describen la versión implementada, sin afirmar un historial de desarrollo anterior al trabajo registrado en Git.
+
+Main
+Crea la vista y el juego con los nombres, y conecta el controlador.
++ main(args: String[]): void
+Controlador
+Coordina las opciones de consola con el modelo.
+- juego: Juego - Referencia al modelo coordinado por el controlador.
+- vista: Vista - Referencia a la interfaz de consola.
++ Controlador(juego: Juego, vista: Vista)
++ iniciar(): void
+Vista
+Recibe las entradas y muestra el estado de la partida.
+- entrada: Scanner - Scanner que utiliza la vista.
++ Vista()
++ mostrar(mensaje: String): void
++ leerTexto(mensaje: String): String
++ leerEntero(mensaje: String): int
++ mostrarCarta(carta: Carta): void
++ mostrarCartas(juego: Juego, soloMano: boolean): void
++ cerrar(): void
+Juego
+Mantiene el catálogo único, los jugadores, los turnos, las búsquedas y las acciones.
+- cartas: ArrayList<Carta> - Único ArrayList<Carta>; mezcla los tres subtipos.
+- jugadores: Jugador[] - Arreglo con las dos personas de la partida.
+- turnoActual: int - Índice del jugador activo: 0 o 1.
+- turnosJugados: int - Acciones de juego completadas; límite de 20.
++ Juego(nombre1: String, nombre2: String)
+- cargarCartas(): void
++ getCantidadCartas(): int
++ getCarta(indice: int): Carta
++ getTurnoActual(): int
++ getTurnosJugados(): int
++ getJugador(indice: int): Jugador
++ buscar(id: int): Carta
++ buscar(nombre: String): Carta
++ ordenarPorEnergia(): void
++ jugar(id: int): String
++ tomarCarta(): String
++ pasarTurno(): void
+- siguienteTurno(): void
++ haTerminado(): boolean
++ resultado(): String
+Carta
+Clase abstracta que reúne la identidad y el contrato común de los efectos.
+- id: int - Identificador único dentro del catálogo.
+- nombre: String - Nombre visible de la carta o jugador.
+- costoEnergia: int - Energía necesaria para jugar la carta.
+- descripcion: String - Explicación breve del efecto.
+- ubicacion: int - -1 mazo, 0/1 mano de jugador, 2 carta utilizada.
++ Carta(id: int, nombre: String, costoEnergia: int, descripcion: String)
++ getId(): int
++ getNombre(): String
++ getCostoEnergia(): int
++ getUbicacion(): int
++ setUbicacion(ubicacion: int): void
++ jugarCarta(actual: Jugador, rival: Jugador): String
++ toString(): String
++ equals(objeto: Object): boolean
++ hashCode(): int
+Jugador
+Controla el nombre, energía y puntos de una persona.
+- nombre: String - Nombre visible de la carta o jugador.
+- energia: int - Recurso disponible del jugador, entre 0 y 20.
+- puntos: int - Puntaje acumulado, sin valores negativos.
++ Jugador(nombre: String)
++ getNombre(): String
++ getEnergia(): int
++ getPuntos(): int
++ cambiarEnergia(cambio: int): void
++ cambiarPuntos(cambio: int): void
++ toString(): String
+Catedratico
+Especializa Carta con departamento y un efecto sobre los puntos de ambos.
+- departamento: String - Departamento al que pertenece el catedrático.
+- llamadasAtencion: int - Puntos que pierde el rival, sin bajar de cero.
+- tiempoAtencion: int - Puntos que gana el jugador al usar el catedrático.
++ Catedratico(id: int, nombre: String, costo: int, departamento: String, llamadas: int, tiempo: int)
++ jugarCarta(actual: Jugador, rival: Jugador): String
++ toString(): String
+Curso
+Especializa Carta con créditos y dificultad para ganar puntos.
+- creditos: int - Créditos aportados por el curso.
+- dificultad: int - Factor por el que se multiplican los créditos.
++ Curso(id: int, nombre: String, costo: int, creditos: int, dificultad: int)
++ jugarCarta(actual: Jugador, rival: Jugador): String
++ toString(): String
+EventoCampus
+Especializa Carta con un cambio de energía para ambos jugadores.
+- cambioEnergia: int - Cantidad que el evento suma o resta a ambos jugadores.
++ EventoCampus(id: int, nombre: String, costo: int, cambioEnergia: int)
++ jugarCarta(actual: Jugador, rival: Jugador): String
++ toString(): String
+
+PRUEBAS
+Se llamaron los tres efectos a través de referencias Carta y se verificaron los puntos y energía obtenidos.
+El catálogo contiene 18 cartas, tres en cada mano y doce en el mazo, con los tres subtipos presentes.
+Ambas búsquedas encuentran la misma carta; el ordenamiento conserva los IDs y ubicaciones.
+Se rechazaron carta ajena, energía insuficiente, mazo vacío y acciones posteriores al final, sin avanzar el turno por error.
+Se completó una partida de veinte turnos y se verificó la terminación y el resultado.

@@ -1,0 +1,85 @@
+Ejercicio 1. Overloading y relaciones entre clases
+The Eras Tour
+Joseline Mishel Mazariegos Lacán
+
+El programa administra una venta piloto de 60 entradas. Cada comprador participa con un ticket aleatorio y, si queda seleccionado, recibe una localidad también aleatoria. Las existencias y el dinero recaudado se conservan mientras el programa está abierto.
+
+REQUISITOS
+1. Registrar nombre, email, cantidad de boletos y presupuesto del comprador activo; permitir reemplazarlo.
+2. Crear un ticket entre 1 y 15,000 y dos números adicionales en el mismo rango por cada solicitud.
+3. Aceptar el ticket si está entre el menor y el mayor de los otros dos números, incluidos los extremos.
+4. Administrar las localidades 1, 5 y 10, con 20 entradas cada una y precios de $100, $500 y $1,000.
+5. Asignar al azar una de las tres localidades únicamente cuando el ticket sea apto.
+6. Rechazar una compra si la localidad está llena. Si quedan menos entradas que las solicitadas, ofrecer la cantidad disponible.
+7. Comprobar que el presupuesto alcance para el total de la compra antes de descontar entradas.
+8. Mostrar por localidad los boletos vendidos y disponibles, y la disponibilidad total.
+9. Consultar los espacios de una localidad elegida por su número.
+10. Calcular la caja total con el precio de cada localidad y sus entradas vendidas.
+11. Permitir salir mediante el menú y recuperar el control cuando se ingrese un dato inválido.
+
+DECISIONES
+El presupuesto se considera el total disponible para la solicitud, no el precio máximo por entrada. Si no alcanza para la cantidad determinada por la disponibilidad, se rechaza la compra. La guía solo pide reducir la cantidad por falta de espacios.
+Una localidad llena o demasiado cara termina esa solicitud: no se vuelve a sortear otra. Los dos números del rango pueden salir iguales; en ese caso solo se acepta ese mismo ticket.
+El comprador activo puede hacer otra solicitud desde el menú. Registrar uno nuevo no reinicia las ventas. Los datos viven en memoria y no se guardan al cerrar el programa.
+
+ANALISIS
+1. Propiedades y métodos
+Comprador reúne los datos de la persona; Localidad controla precio y existencias; VentaBoletos coordina el sorteo y los reportes; Main atiende el menú. El detalle de todos los miembros aparece en el inventario siguiente.
+
+2. Tipos de datos
+Se usan String para nombre y email, int para cantidades y números, double para dinero, Comprador para la persona activa y Localidad[] para las tres localidades. Los métodos de consulta devuelven el dato indicado; las acciones sin resultado devuelven void.
+
+3. Visibilidad
+Los atributos son private para que no se puedan cambiar desde el menú sin validación. Los constructores y las operaciones que necesita otra clase son public.
+
+4. Parámetros
+Los constructores reciben los datos iniciales. vender recibe la cantidad positiva; setComprador recibe un Comprador; buscarLocalidad recibe el número de localidad. solicitar no recibe datos porque usa el comprador activo.
+
+5. Valores iniciales y sobrecarga
+Las localidades comienzan con cero vendidos. El constructor Localidad(numero, precio) llama al constructor de tres parámetros con capacidad 20: es la sobrecarga utilizada. VentaBoletos crea las tres localidades, Random y deja comprador en null hasta registrarlo. Los datos del comprador se validan en su constructor.
+
+Main
+Recibe los datos y presenta el menú de seis opciones.
++ main(args: String[]): void
+VentaBoletos
+Coordina las solicitudes, mantiene las tres secciones y calcula consultas y caja.
+- localidades: Localidad[] - Arreglo con las tres instancias de Localidad.
+- comprador: Comprador - Referencia al comprador activo; inicialmente null.
+- random: Random - Generador de tickets, rangos y localidad.
++ VentaBoletos()
++ setComprador(comprador: Comprador): void
++ solicitar(): String
++ buscarLocalidad(numero: int): Localidad
++ disponibilidad(): String
++ reporteCaja(): double
+Comprador
+Representa a la persona que solicita entradas.
+- nombre: String - Nombre de la persona que realiza la compra.
+- email: String - Correo del comprador.
+- cantidad: int - Número de entradas que desea comprar.
+- presupuesto: double - Dinero total máximo que puede gastar.
++ Comprador(nombre: String, email: String, cantidad: int, presupuesto: double)
++ getNombre(): String
++ getEmail(): String
++ getCantidad(): int
++ getPresupuesto(): double
+Localidad
+Representa una sección y evita vender más entradas de las que tiene.
+- numero: int - Identificador de la localidad: 1, 5 o 10.
+- precio: double - Costo de una entrada en esta localidad.
+- capacidad: int - Límite de entradas de la localidad.
+- vendidos: int - Entradas que ya se vendieron.
++ Localidad(numero: int, precio: double)
++ Localidad(numero: int, precio: double, capacidad: int)
++ getNumero(): int
++ getPrecio(): double
++ getVendidos(): int
++ getDisponibles(): int
++ getRecaudacion(): double
++ vender(cantidad: int): int
+
+PRUEBAS
+Localidad de 20 espacios: vender 25 entrega 20 y deja cero disponibles.
+Sorteo controlado: ticket aceptado, rechazado, localidad llena y presupuesto insuficiente.
+Venta de 3 y luego solicitud de 25 en la misma sección: la segunda vende las 17 restantes.
+La caja coincide con las entradas vendidas por su precio.
