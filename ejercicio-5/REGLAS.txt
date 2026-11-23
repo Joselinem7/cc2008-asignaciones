@@ -1,0 +1,22 @@
+UVG Card Battle
+
+Dos jugadores comparten un catalogo aleatorio de 18 cartas. Cada uno empieza
+con tres cartas en la mano y diez puntos de energia. Cada carta tiene un ID unico.
+Jugar una carta, tomar una del mazo o pasar consume el turno. Consultar, buscar,
+ordenar o cometer un error no consume turno. Cada jugador tiene diez turnos.
+Al comenzar un nuevo turno, a partir del segundo turno global, el jugador que
+entra recibe dos puntos de energia. La energia se mantiene entre cero y veinte.
+
+Catedratico: resta al rival las llamadas de atencion y suma al jugador su tiempo
+de atencion como puntos. Los puntos nunca bajan de cero.
+Curso: suma creditos por dificultad como puntos.
+Evento Campus: cambia la energia de ambos jugadores; feria suma cuatro,
+semana de parciales resta tres. Primero se paga el costo de la carta.
+
+Solo se puede jugar una carta de la propia mano y con energia suficiente.
+Las cartas jugadas no se reutilizan. Ordenar el catalogo tambien cambia el orden
+en que se tomaran las cartas disponibles, sin cambiar los IDs ni sus propietarios.
+Al terminar los veinte turnos gana quien tenga mas puntos. Puede haber empate.
+
+Hay una sola coleccion ArrayList<Carta>. La ubicacion de cada carta indica
+-1: mazo; 0 o 1: mano de cada jugador; 2: carta ya jugada.
