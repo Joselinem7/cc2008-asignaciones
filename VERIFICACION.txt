@@ -1,0 +1,18 @@
+COMPROBACIONES DE LOS PROGRAMAS
+
+Compilados con Java 23, destino Java 17.
+
+ejercicio-1
+Aforo, venta parcial, ticket, presupuesto y caja: correctos.
+
+ejercicio-2
+13 resultados verificados pixel por pixel; copia independiente, limites y errores correctos.
+
+laboratorio-2
+Arreglo de 5 modulos, ArrayList, edicion, eliminacion, reportes y excepciones: correctos.
+
+ejercicio-5
+Efectos polimorficos, busquedas, orden, manos, energia, mazo vacio y 20 turnos: correctos.
+
+Git: cada programa se integro desde una rama independiente.
+El historial registra el armado de estas entregas; no representa trabajo en las fechas originales de entrega.
